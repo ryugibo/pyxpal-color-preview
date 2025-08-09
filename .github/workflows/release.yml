@@ -31,6 +31,14 @@ jobs:
           echo "Version from tag: $VERSION"
           npm version $VERSION --no-git-tag-version
 
+      - name: Commit and Push package.json
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add package.json
+          git commit -m "chore: bump version to ${{ github.ref_name }}"
+          git push origin HEAD:${{ github.event.repository.default_branch }}
+
       - name: Package extension
         run: vsce package
 

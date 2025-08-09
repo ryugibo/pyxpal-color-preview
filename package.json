@@ -1,0 +1,31 @@
+{
+  "name": "pyxpal-color-preview",
+  "displayName": "Pyxpal Color Preview",
+  "description": "Show color preview in .pyxpal files when a line contains 6-digit HEX code without #.",
+  "publisher": "ryugibo",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:pyxpal",
+    "onStartupFinished"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "pyxpal",
+        "extensions": [
+          ".pyxpal"
+        ],
+        "aliases": [
+          "Pyxpal"
+        ]
+      }
+    ]
+  }
+}

@@ -3,7 +3,7 @@ name: Build and Release VSCode Extension
 on:
   push:
     tags:
-      - "v*"
+      - "v*.*.*" # v1.2.3 형식의 태그에서만 실행
 
 jobs:
   build:
@@ -16,10 +16,17 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: "20"
 
       - name: Install vsce
-        run: npm install -g vsce
+        run: npm install -g @vscode/vsce
+
+      - name: Update package.json version
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          VERSION=${TAG#v}
+          echo "Version from tag: $VERSION"
+          npm version $VERSION --no-git-tag-version
 
       - name: Package extension
         run: vsce package

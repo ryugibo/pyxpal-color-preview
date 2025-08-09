@@ -3,7 +3,10 @@ name: Build and Release VSCode Extension
 on:
   push:
     tags:
-      - "v*.*.*" # v1.2.3 형식의 태그에서만 실행
+      - "v*.*.*"
+
+permissions:
+  contents: write
 
 jobs:
   build:

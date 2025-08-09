@@ -4,6 +4,10 @@
   "description": "Show color preview in .pyxpal files when a line contains 6-digit HEX code without #.",
   "publisher": "ryugibo",
   "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ryugibo/pyxpal-color-preview.git"
+  },
   "engines": {
     "vscode": "^1.60.0"
   },

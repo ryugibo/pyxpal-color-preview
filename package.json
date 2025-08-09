@@ -15,8 +15,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onLanguage:pyxpal",
-    "onStartupFinished"
+    "onLanguage:pyxpal"
   ],
   "main": "./extension.js",
   "contributes": {

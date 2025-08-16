@@ -47,66 +47,43 @@ const lineLabels = [
   "pyxel.COLOR_PEACH",
 ];
 
-const labelDecorationCache = new Map();
-
 /**
- * 에디터의 색상 미리보기 장식을 업데이트합니다.
- * @param {vscode.TextEditor} editor
+ * Pyxpal 파일에 대한 CodeLens를 제공합니다.
+ * 각 색상 라인 위에 복사 버튼을 추가합니다.
  */
-function updateDecorations(editor) {
-  if (!editor || editor.document.languageId !== "pyxpal") {
-    return;
-  }
-
-  const hexRegex = /^[0-9A-Fa-f]{6}$/i;
-  const labelDecorationsMap = new Map(); // Map<label, vscode.DecorationOptions[]>
-
-  for (let i = 0; i < editor.document.lineCount; i++) {
-    const line = editor.document.lineAt(i);
-    const text = line.text.trim();
-
-    if (hexRegex.test(text)) {
-      const label = lineLabels[i];
-      if (label) {
-        if (!labelDecorationsMap.has(label)) {
-          labelDecorationsMap.set(label, []);
-        }
-
-        // 복사 커맨드를 실행하는 마크다운 링크를 생성합니다.
-        const args = [label];
-        const commandUri = vscode.Uri.parse(
-          `command:pyxpal.copyLabel?${encodeURIComponent(JSON.stringify(args))}`
-        );
-        const hoverMessage = new vscode.MarkdownString(
-          `[Copy Label: **${label}**](${commandUri})`
-        );
-        hoverMessage.isTrusted = true; // 커맨드 실행을 위해 필요합니다.
-
-        const options = {
-          range: line.range,
-          hoverMessage: hoverMessage,
-        };
-        labelDecorationsMap.get(label).push(options);
+class PyxpalCodeLensProvider {
+  provideCodeLenses(document, token) {
+    const codeLenses = [];
+    const hexRegex = /^[0-9A-Fa-f]{6}$/i;
+    for (let i = 0; i < document.lineCount; i++) {
+      const line = document.lineAt(i);
+      const text = line.text.trim();
+      if (token.isCancellationRequested) {
+        return [];
+      }
+      if (hexRegex.test(text)) {
+        const range = line.range;
+        codeLenses.push(new vscode.CodeLens(range));
       }
     }
+    return codeLenses;
   }
 
-  // 이전 장식들을 정리합니다.
-  labelDecorationCache.forEach((d) => d.dispose());
-  labelDecorationCache.clear();
-
-  // 라벨 장식을 적용합니다.
-  for (const [label, options] of labelDecorationsMap.entries()) {
-    const decorationType = vscode.window.createTextEditorDecorationType({
-      isWholeLine: true,
-      after: {
-        contentText: ` ${label}`,
-        margin: "0 0 0 1em",
-        color: new vscode.ThemeColor("editor.foreground"),
-      },
-    });
-    editor.setDecorations(decorationType, options);
-    labelDecorationCache.set(label, decorationType);
+  resolveCodeLens(codeLens, token) {
+    const line = codeLens.range.start.line;
+    const label = lineLabels[line];
+    if (token.isCancellationRequested) {
+      return null;
+    }
+    if (label) {
+      codeLens.command = {
+        title: `$(clippy) ${label}`,
+        command: "pyxpal.copyLabel",
+        arguments: [label],
+        tooltip: `Copy "${label}" to clipboard`,
+      };
+    }
+    return codeLens;
   }
 }
 
@@ -156,49 +133,15 @@ function activate(context) {
   );
   context.subscriptions.push(providerRegistration);
 
-  // --- 오른쪽 끝에 라벨을 표시하는 장식 기능 ---
-
-  let activeEditor = vscode.window.activeTextEditor;
-  let timeout = undefined;
-
-  function triggerUpdateDecorations() {
-    if (timeout) {
-      clearTimeout(timeout);
-      timeout = undefined;
-    }
-    timeout = setTimeout(() => updateDecorations(activeEditor), 250);
-  }
-
-  if (activeEditor) {
-    triggerUpdateDecorations();
-  }
-
-  vscode.window.onDidChangeActiveTextEditor(
-    (editor) => {
-      activeEditor = editor;
-      if (editor) {
-        triggerUpdateDecorations();
-      }
-    },
-    null,
-    context.subscriptions
+  // CodeLens 공급자 등록
+  const codeLensProvider = new PyxpalCodeLensProvider();
+  const codeLensProviderRegistration = vscode.languages.registerCodeLensProvider(
+    { language: "pyxpal" },
+    codeLensProvider
   );
-
-  vscode.workspace.onDidChangeTextDocument(
-    (event) => {
-      if (activeEditor && event.document === activeEditor.document) {
-        triggerUpdateDecorations();
-      }
-    },
-    null,
-    context.subscriptions
-  );
+  context.subscriptions.push(codeLensProviderRegistration);
 }
 
-function deactivate() {
-  // 캐시된 모든 장식을 정리합니다.
-  labelDecorationCache.forEach((decoration) => decoration.dispose());
-  labelDecorationCache.clear();
-}
+function deactivate() {}
 
 module.exports = { activate, deactivate };

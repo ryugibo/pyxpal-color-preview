@@ -22,7 +22,7 @@ function toHexColor(color) {
   const g = Math.round(color.green * 255);
   const b = Math.round(color.blue * 255);
 
-  const toHex = (c) => c.toString(16).padStart(2, "0");
+  const toHex = (c) => c.toString(16).padStart(2, "0").toUpperCase();
 
   return `${toHex(r)}${toHex(g)}${toHex(b)}`;
 }

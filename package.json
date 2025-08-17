@@ -39,5 +39,8 @@
   "l10n": "./l10n",
   "devDependencies": {
     "@vscode/vsce": "^3.6.0"
+  },
+  "dependencies": {
+    "vscode-nls": "^5.2.0"
   }
 }

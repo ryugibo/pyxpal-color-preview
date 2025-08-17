@@ -77,7 +77,7 @@ class PyxpalCodeLensProvider {
     }
     if (label) {
       codeLens.command = {
-        title: `$(clippy) ${label}`,
+        title: `$(clippy) ${line}: ${label}`,
         command: "pyxpal.copyLabel",
         arguments: [label],
         tooltip: `Copy "${label}" to clipboard`,

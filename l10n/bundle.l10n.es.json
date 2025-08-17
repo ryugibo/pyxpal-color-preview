@@ -1,5 +1,4 @@
 {
     "Copied": "Copiado: {0}",
-    "exceeded_color_definitions": "Datos sin sentido: Se excedieron las 16 definiciones de color.",
     "invalid_hex_code": "Datos sin sentido: No es un código HEX de 6 dígitos válido."
 }

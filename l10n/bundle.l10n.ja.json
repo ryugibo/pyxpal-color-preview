@@ -1,5 +1,4 @@
 {
     "Copied": "コピーしました: {0}",
-    "exceeded_color_definitions": "無意味なデータ: 16色の定義を超えています。",
     "invalid_hex_code": "無意味なデータ: 有効な6桁の16進コードではありません。"
 }

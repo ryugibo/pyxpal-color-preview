@@ -74,16 +74,27 @@ class PyxpalCodeLensProvider {
 
   resolveCodeLens(codeLens, token) {
     const line = codeLens.range.start.line;
-    const label = lineLabels[line];
     if (token.isCancellationRequested) {
       return null;
     }
+
+    const label = lineLabels[line];
     if (label) {
+      // For lines 0-15, use the label
       codeLens.command = {
         title: `$(clippy) ${line}: ${label}`,
         command: "pyxpal.copyLabel",
         arguments: [label],
         tooltip: `Copy "${label}" to clipboard`,
+      };
+    } else {
+      // For lines 16 and above, just use the line number
+      const lineStr = line.toString();
+      codeLens.command = {
+        title: `$(clippy) ${line}`,
+        command: "pyxpal.copyLabel",
+        arguments: [lineStr],
+        tooltip: `Copy "${lineStr}" to clipboard`,
       };
     }
     return codeLens;

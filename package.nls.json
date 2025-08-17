@@ -1,4 +1,4 @@
 {
     "extension.displayName": "Pyxpal Color Preview",
-    "extension.description": "Show color preview in .pyxpal files when a line contains 6-digit HEX code without #."
+    "extension.description": "Provides a rich preview for .pyxpal palette files. It displays color swatches and corresponding pyxel.COLOR_* labels for the 16 hex color codes."
 }

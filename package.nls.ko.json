@@ -1,4 +1,4 @@
 {
     "extension.displayName": "Pyxpal 색상 미리보기",
-    "extension.description": ".pyxpal 파일의 한 줄에 # 없는 6자리 HEX 코드가 포함된 경우 색상 미리보기를 표시합니다."
+    "extension.description": ".pyxpal 팔레트 파일을 위한 풍부한 미리보기를 제공합니다. 16개의 HEX 색상 코드에 대해 색상 견본과 해당하는 pyxel.COLOR_* 라벨을 표시합니다.."
 }

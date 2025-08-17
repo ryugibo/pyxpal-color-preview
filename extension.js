@@ -157,10 +157,6 @@ function activate(context) {
         const line = document.lineAt(lineIndex);
         const text = line.text.trim();
 
-        if (text.length === 0) {
-          continue;
-        }
-
         let message = null;
         if (lineIndex >= 16) {
             message = localize("exceeded_color_definitions", "Meaningless data: Exceeded 16 color definitions.");

@@ -59,44 +59,43 @@ class PyxpalCodeLensProvider {
     const codeLenses = [];
     const hexRegex = /^[0-9A-Fa-f]{6}$/i;
     for (let i = 0; i < document.lineCount; i++) {
-      const line = document.lineAt(i);
-      const text = line.text.trim();
       if (token.isCancellationRequested) {
         return [];
       }
+      const line = document.lineAt(i);
+      const text = line.text.trim();
+
       if (hexRegex.test(text)) {
         const range = line.range;
-        codeLenses.push(new vscode.CodeLens(range));
+        const label = lineLabels[i];
+
+        if (label) {
+          // Lens for the label
+          const labelLens = new vscode.CodeLens(range, {
+            title: label,
+            command: "pyxpal.copyLabel",
+            arguments: [label],
+            tooltip: `Copy "${label}" to clipboard`,
+          });
+          codeLenses.push(labelLens);
+        }
+
+        // Lens for the number
+        const numStr = i.toString();
+        const numLens = new vscode.CodeLens(range, {
+          title: `[ ${numStr} ]`,
+          command: "pyxpal.copyLabel",
+          arguments: [numStr],
+          tooltip: `Copy "${numStr}" to clipboard`,
+        });
+        codeLenses.push(numLens);
       }
     }
     return codeLenses;
   }
 
   resolveCodeLens(codeLens, token) {
-    const line = codeLens.range.start.line;
-    if (token.isCancellationRequested) {
-      return null;
-    }
-
-    const label = lineLabels[line];
-    if (label) {
-      // For lines 0-15, use the label
-      codeLens.command = {
-        title: `$(clippy) ${line}: ${label}`,
-        command: "pyxpal.copyLabel",
-        arguments: [label],
-        tooltip: `Copy "${label}" to clipboard`,
-      };
-    } else {
-      // For lines 16 and above, just use the line number
-      const lineStr = line.toString();
-      codeLens.command = {
-        title: `$(clippy) ${line}`,
-        command: "pyxpal.copyLabel",
-        arguments: [lineStr],
-        tooltip: `Copy "${lineStr}" to clipboard`,
-      };
-    }
+    // All commands are created in provideCodeLenses, so this is no longer needed.
     return codeLens;
   }
 }
@@ -106,7 +105,6 @@ function activate(context) {
   const copyCommand = vscode.commands.registerCommand(
     "pyxpal.copyLabel",
     (textToCopy) => {
-      vscode.env.clipboard.writeText(textToCopy);
       vscode.window.showInformationMessage(
         localize("Copied", "Copied: {0}", textToCopy)
       );

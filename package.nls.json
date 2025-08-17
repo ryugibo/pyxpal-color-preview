@@ -1,4 +1,4 @@
 {
     "extension.displayName": "Pyxpal Color Preview",
-    "extension.description": "Provides a rich preview for .pyxpal palette files. It displays color swatches and corresponding pyxel.COLOR_* labels for the 16 hex color codes."
+    "extension.description": "Provides a color preview for .pyxpal files, showing the color palette directly in the editor."
 }

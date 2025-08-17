@@ -1,0 +1,4 @@
+{
+    "extension.displayName": "Pyxpal 颜色预览",
+    "extension.description": "为 .pyxpal 文件提供颜色预览，直接在编辑器中显示调色板。"
+}

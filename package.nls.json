@@ -1,0 +1,4 @@
+{
+    "extension.displayName": "Pyxpal Color Preview",
+    "extension.description": "Show color preview in .pyxpal files when a line contains 6-digit HEX code without #."
+}

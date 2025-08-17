@@ -1,0 +1,4 @@
+{
+    "extension.displayName": "Pyxpal 색상 미리보기",
+    "extension.description": ".pyxpal 파일의 한 줄에 # 없는 6자리 HEX 코드가 포함된 경우 색상 미리보기를 표시합니다."
+}

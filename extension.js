@@ -1,4 +1,7 @@
 const vscode = require("vscode");
+const nls = require("vscode-nls");
+
+const localize = nls.loadMessageBundle();
 
 /**
  * 6자리 HEX 문자열을 vscode.Color 객체로 파싱합니다.
@@ -93,13 +96,14 @@ function activate(context) {
     "pyxpal.copyLabel",
     (textToCopy) => {
       vscode.env.clipboard.writeText(textToCopy);
-      vscode.window.showInformationMessage(`Copied: ${textToCopy}`);
+      vscode.window.showInformationMessage(localize("Copied", "Copied: {0}", textToCopy));
     }
   );
   context.subscriptions.push(copyCommand);
 
-  // 색상 코드 텍스트에서 색상 선택기를 제공하는 기능
   const hexRegex = /^[0-9A-Fa-f]{6}$/i;
+
+  // 색상 코드 텍스트에서 색상 선택기를 제공하는 기능
   const colorProvider = {
     provideDocumentColors(document, token) {
       const colors = [];
@@ -140,6 +144,68 @@ function activate(context) {
     codeLensProvider
   );
   context.subscriptions.push(codeLensProviderRegistration);
+
+  // --- Diagnostics for inactive lines ---
+  const diagnosticCollection =
+    vscode.languages.createDiagnosticCollection("pyxpal");
+  context.subscriptions.push(diagnosticCollection);
+
+  function updateDiagnostics(document) {
+    if (document && document.languageId === "pyxpal") {
+      const diagnostics = [];
+      for (let lineIndex = 0; lineIndex < document.lineCount; lineIndex++) {
+        const line = document.lineAt(lineIndex);
+        const text = line.text.trim();
+
+        if (text.length === 0) {
+          continue;
+        }
+
+        let message = null;
+        if (lineIndex >= 16) {
+            message = localize("exceeded_color_definitions", "Meaningless data: Exceeded 16 color definitions.");
+        } else if (!hexRegex.test(text)) {
+            message = localize("invalid_hex_code", "Meaningless data: Not a valid 6-digit HEX code.");
+        }
+
+        if (message) {
+          const range = new vscode.Range(
+            lineIndex,
+            0,
+            lineIndex,
+            line.range.end.character
+          );
+          const diagnostic = new vscode.Diagnostic(
+            range,
+            message,
+            vscode.DiagnosticSeverity.Warning
+          );
+          diagnostics.push(diagnostic);
+        }
+      }
+      diagnosticCollection.set(document.uri, diagnostics);
+    }
+  }
+
+  if (vscode.window.activeTextEditor) {
+    updateDiagnostics(vscode.window.activeTextEditor.document);
+  }
+
+  context.subscriptions.push(
+    vscode.workspace.onDidOpenTextDocument((doc) => updateDiagnostics(doc))
+  );
+
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeTextDocument((event) =>
+      updateDiagnostics(event.document)
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.workspace.onDidCloseTextDocument((doc) =>
+      diagnosticCollection.delete(doc.uri)
+    )
+  );
 }
 
 function deactivate() {}

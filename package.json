@@ -35,7 +35,8 @@
     "extension.js",
     "README.md",
     "LICENSE",
-    "package.nls*.json"
+    "package.nls*.json",
+    "node_modules/"
   ],
   "l10n": "./l10n",
   "devDependencies": {

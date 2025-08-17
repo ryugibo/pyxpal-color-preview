@@ -43,8 +43,15 @@ jobs:
         run: npx vsce package
 
       - name: Publish to Visual Studio Marketplace
-        if: github.repository_owner == 'ryugibo' && secrets.VS_MARKETPLACE_TOKEN != ''
-        run: npx vsce publish --pat ${{ secrets.VS_MARKETPLACE_TOKEN }}
+        if: github.repository_owner == 'ryugibo'
+        env:
+          VS_MARKETPLACE_TOKEN: ${{ secrets.VS_MARKETPLACE_TOKEN }}
+        run: |
+          if [ -z "$VS_MARKETPLACE_TOKEN" ]; then
+            echo "VS_MARKETPLACE_TOKEN not found. Skipping publish."
+          else
+            npx vsce publish --pat "$VS_MARKETPLACE_TOKEN"
+          fi
 
       - name: Create Release
         uses: softprops/action-gh-release@v2

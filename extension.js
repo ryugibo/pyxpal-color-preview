@@ -153,23 +153,29 @@ function activate(context) {
   function updateDiagnostics(document) {
     if (document && document.languageId === "pyxpal") {
       const diagnostics = [];
-      for (let lineIndex = 0; lineIndex < document.lineCount; lineIndex++) {
+      // Find the last line with content.
+      let lastNonEmptyLine = -1;
+      for (let i = document.lineCount - 1; i >= 0; i--) {
+        if (document.lineAt(i).text.trim().length > 0) {
+          lastNonEmptyLine = i;
+          break;
+        }
+      }
+
+      for (let lineIndex = 0; lineIndex <= lastNonEmptyLine; lineIndex++) {
         const line = document.lineAt(lineIndex);
         const text = line.text.trim();
 
-        let message = null;
-        if (lineIndex >= 16) {
-            message = localize("exceeded_color_definitions", "Meaningless data: Exceeded 16 color definitions.");
-        } else if (!hexRegex.test(text)) {
-            message = localize("invalid_hex_code", "Meaningless data: Not a valid 6-digit HEX code.");
-        }
-
-        if (message) {
+        if (!hexRegex.test(text)) {
           const range = new vscode.Range(
             lineIndex,
             0,
             lineIndex,
             line.range.end.character
+          );
+          const message = localize(
+            "invalid_hex_code",
+            "Meaningless data: Not a valid 6-digit HEX code."
           );
           const diagnostic = new vscode.Diagnostic(
             range,

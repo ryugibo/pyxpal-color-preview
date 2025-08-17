@@ -69,26 +69,26 @@ class PyxpalCodeLensProvider {
         const range = line.range;
         const label = lineLabels[i];
 
+        // Lens for the number (always present for a valid hex line)
+        const numStr = i.toString();
+        const numLens = new vscode.CodeLens(range, {
+          title: `$(symbol-numeric) ${numStr}`,
+          command: "pyxpal.copyLabel",
+          arguments: [numStr],
+          tooltip: `Copy index ${numStr}`,
+        });
+        codeLenses.push(numLens);
+
+        // Lens for the label (only for lines < 16)
         if (label) {
-          // Lens for the label
           const labelLens = new vscode.CodeLens(range, {
-            title: label,
+            title: `$(symbol-enum-member) ${label}`,
             command: "pyxpal.copyLabel",
             arguments: [label],
-            tooltip: `Copy "${label}" to clipboard`,
+            tooltip: `Copy "${label}"`,
           });
           codeLenses.push(labelLens);
         }
-
-        // Lens for the number
-        const numStr = i.toString();
-        const numLens = new vscode.CodeLens(range, {
-          title: `[ ${numStr} ]`,
-          command: "pyxpal.copyLabel",
-          arguments: [numStr],
-          tooltip: `Copy "${numStr}" to clipboard`,
-        });
-        codeLenses.push(numLens);
       }
     }
     return codeLenses;

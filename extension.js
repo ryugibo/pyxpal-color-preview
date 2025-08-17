@@ -96,7 +96,9 @@ function activate(context) {
     "pyxpal.copyLabel",
     (textToCopy) => {
       vscode.env.clipboard.writeText(textToCopy);
-      vscode.window.showInformationMessage(localize("Copied", "Copied: {0}", textToCopy));
+      vscode.window.showInformationMessage(
+        localize("Copied", "Copied: {0}", textToCopy)
+      );
     }
   );
   context.subscriptions.push(copyCommand);
@@ -139,10 +141,11 @@ function activate(context) {
 
   // CodeLens 공급자 등록
   const codeLensProvider = new PyxpalCodeLensProvider();
-  const codeLensProviderRegistration = vscode.languages.registerCodeLensProvider(
-    { language: "pyxpal" },
-    codeLensProvider
-  );
+  const codeLensProviderRegistration =
+    vscode.languages.registerCodeLensProvider(
+      { language: "pyxpal" },
+      codeLensProvider
+    );
   context.subscriptions.push(codeLensProviderRegistration);
 
   // --- Diagnostics for inactive lines ---
